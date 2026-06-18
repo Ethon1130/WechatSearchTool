@@ -1,4 +1,4 @@
-import type { ExtractedSource, SourceType } from './types';
+import type { ExtractedSource, SourceType, WechatAccountProfile } from './types';
 
 export async function parseSource(url: string): Promise<ExtractedSource> {
   const parsedUrl = normalizeUrl(url);
@@ -83,6 +83,10 @@ export async function parseSource(url: string): Promise<ExtractedSource> {
   const contentText = cleanMultilineText(contentRoot.text());
   const images = collectImages($, contentRoot, parsedUrl.origin);
   const links = collectLinks($, contentRoot, parsedUrl.origin);
+  const accountProfile =
+    sourceType === 'wechat'
+      ? extractWechatAccountProfile($, html, parsedUrl.toString(), sourceName)
+      : undefined;
 
   return {
     title,
@@ -98,6 +102,7 @@ export async function parseSource(url: string): Promise<ExtractedSource> {
     images,
     links,
     extractedAt: new Date().toISOString(),
+    ...(accountProfile ? { accountProfile } : {}),
   };
 }
 
@@ -163,4 +168,94 @@ function collectLinks($: any, root: any, baseUrl: string): ExtractedSource['link
   });
 
   return links.slice(0, 80);
+}
+
+function extractWechatAccountProfile(
+  $: any,
+  html: string,
+  sourceArticleUrl: string,
+  fallbackName: string
+): WechatAccountProfile | undefined {
+  const name = cleanText(
+    $('#js_name').text() ||
+      extractScriptString(html, 'nickname') ||
+      extractScriptString(html, 'nick_name') ||
+      fallbackName
+  );
+  const profileHref =
+    $('#js_name').attr('href') ||
+    $('a[href*="profile_ext"]').first().attr('href') ||
+    extractScriptString(html, 'profile_url');
+  const biz =
+    extractBizFromUrl(sourceArticleUrl) ||
+    extractBizFromUrl(profileHref || '') ||
+    extractScriptString(html, 'biz') ||
+    extractScriptString(html, '__biz');
+  const homepageUrl = normalizeWechatProfileUrl(profileHref, biz);
+
+  if (!name && !homepageUrl) return undefined;
+
+  return {
+    name: name || '未知公众号',
+    ...(homepageUrl ? { homepageUrl } : {}),
+    sourceArticleUrl,
+  };
+}
+
+function normalizeWechatProfileUrl(rawUrl: string | undefined, biz: string): string {
+  if (rawUrl) {
+    const decoded = decodeHtmlText(rawUrl).trim();
+    let absolute = decoded;
+    if (decoded.startsWith('//')) absolute = `https:${decoded}`;
+    if (decoded.startsWith('/')) absolute = `https://mp.weixin.qq.com${decoded}`;
+
+    try {
+      const parsed = new URL(absolute);
+      if (parsed.hostname.endsWith('mp.weixin.qq.com') && parsed.pathname.includes('profile_ext')) {
+        parsed.hash = '#wechat_redirect';
+        return parsed.toString();
+      }
+    } catch {
+      // Fall through to the __biz constructor below.
+    }
+  }
+
+  return biz
+    ? `https://mp.weixin.qq.com/mp/profile_ext?action=home&__biz=${encodeURIComponent(biz)}&scene=124#wechat_redirect`
+    : '';
+}
+
+function extractBizFromUrl(rawUrl: string): string {
+  if (!rawUrl) return '';
+  const decoded = decodeHtmlText(rawUrl).trim();
+  let absolute = decoded;
+  if (decoded.startsWith('//')) absolute = `https:${decoded}`;
+  if (decoded.startsWith('/')) absolute = `https://mp.weixin.qq.com${decoded}`;
+
+  try {
+    const parsed = new URL(absolute);
+    return parsed.searchParams.get('__biz') || '';
+  } catch {
+    const match = decoded.match(/[?&]__biz=([^&#]+)/);
+    return match ? decodeURIComponent(match[1]) : '';
+  }
+}
+
+function extractScriptString(html: string, variableName: string): string {
+  const pattern = new RegExp(`(?:var\\s+)?${escapeRegExp(variableName)}\\s*=\\s*(['"])(.*?)\\1`);
+  const match = html.match(pattern);
+  return match ? cleanText(decodeHtmlText(match[2])) : '';
+}
+
+function decodeHtmlText(value: string): string {
+  return value
+    .replace(/&amp;/g, '&')
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>');
+}
+
+function escapeRegExp(value: string): string {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }

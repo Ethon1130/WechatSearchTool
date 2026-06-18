@@ -1,12 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { discoverWechatArticles } from '@/lib/discover';
+import { discoverWechatArticles, type EngineName } from '@/lib/discover';
 
 const DEFAULT_LIMIT = 12;
 const MAX_LIMIT = 30;
+const VALID_ENGINES: EngineName[] = ['duckduckgo', 'bing', 'sogou'];
 
 export async function POST(request: NextRequest) {
   try {
-    const body = (await request.json()) as { accountName?: string; limit?: number };
+    const body = (await request.json()) as {
+      accountName?: string;
+      limit?: number;
+      engines?: string[];
+      biz?: string;
+    };
     const accountName = (body.accountName || '').trim();
 
     if (!accountName) {
@@ -18,7 +24,20 @@ export async function POST(request: NextRequest) {
         ? Math.min(Math.max(1, Math.floor(body.limit)), MAX_LIMIT)
         : DEFAULT_LIMIT;
 
-    const result = await discoverWechatArticles(accountName, limit);
+    const engines: EngineName[] = Array.isArray(body.engines)
+      ? body.engines.filter((engine): engine is EngineName =>
+          typeof engine === 'string' && VALID_ENGINES.includes(engine as EngineName)
+        )
+      : ['duckduckgo', 'bing'];
+
+    const biz = typeof body.biz === 'string' && body.biz.trim().length > 0
+      ? body.biz.trim()
+      : undefined;
+
+    const result = await discoverWechatArticles(accountName, limit, {
+      engines: engines.length > 0 ? engines : ['duckduckgo', 'bing'],
+      biz,
+    });
 
     return NextResponse.json({
       accountName,
@@ -27,6 +46,8 @@ export async function POST(request: NextRequest) {
       engine: result.engine,
       discoveryType: result.discoveryType,
       overview: result.overview,
+      ...(result.accountProfile ? { accountProfile: result.accountProfile } : {}),
+      ...(result.engineSelection ? { engineSelection: result.engineSelection } : {}),
       ...(result.hint ? { hint: result.hint } : {}),
     });
   } catch (error) {

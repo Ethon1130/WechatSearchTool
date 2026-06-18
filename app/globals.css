@@ -265,6 +265,42 @@ textarea.batch-textarea:focus {
   line-height: 1.6;
 }
 
+.engine-picker {
+  margin-top: 14px;
+  display: grid;
+  gap: 6px;
+}
+
+.engine-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+}
+
+.engine-option {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: #344054;
+  cursor: pointer;
+}
+
+.engine-option input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+}
+
+.engine-option-label {
+  font-weight: 500;
+}
+
+.engine-option-warn {
+  font-weight: 600;
+  color: #b45309;
+}
+
 .engine-hint {
   margin-top: 12px;
   color: #5d6878;
@@ -288,6 +324,20 @@ textarea.batch-textarea:focus {
   gap: 14px;
   border-color: #cfdcfb;
   background: #f7fbff;
+}
+
+.account-profile-panel {
+  display: grid;
+  gap: 12px;
+  border-color: #cfdcfb;
+  background: #f7fbff;
+}
+
+.account-profile-panel strong,
+.account-profile-panel a {
+  display: block;
+  overflow-wrap: anywhere;
+  line-height: 1.6;
 }
 
 .section-kicker {
@@ -599,6 +649,17 @@ textarea.batch-textarea:focus {
   flex: 0 0 auto;
   color: #1769e0;
   font-size: 12px;
+}
+
+.candidate-source {
+  flex: 0 0 auto;
+  border: 1px solid #cfdcfb;
+  border-radius: 999px;
+  background: #fff;
+  padding: 2px 8px;
+  color: #1e3a8a;
+  font-size: 11px;
+  line-height: 1.4;
 }
 
 .candidate-snippet {

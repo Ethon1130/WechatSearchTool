@@ -17,6 +17,7 @@ export interface ExtractedSource {
     href: string;
   }>;
   extractedAt: string;
+  accountProfile?: WechatAccountProfile;
 }
 
 export interface SourceSummary {
@@ -38,11 +39,20 @@ export interface ParseError {
   detail?: string;
 }
 
+export type DiscoveredArticleSource = 'seed-article' | 'homepage' | 'search';
+
+export interface WechatAccountProfile {
+  name: string;
+  homepageUrl?: string;
+  sourceArticleUrl?: string;
+}
+
 export interface DiscoveredArticle {
   title: string;
   url: string;
   snippet: string;
   sourceName?: string;
+  discoverySource?: DiscoveredArticleSource;
 }
 
 export interface DiscoverOverview {
@@ -52,13 +62,25 @@ export interface DiscoverOverview {
   sampleTitles: string[];
 }
 
+export type DiscoveryType = 'account-name' | 'homepage-url' | 'article-url';
+export type EngineName = 'duckduckgo' | 'bing' | 'sogou';
+
+export interface EngineSelection {
+  requested: EngineName[];
+  used: EngineName[];
+  noResults?: EngineName[];
+  errors: Partial<Record<EngineName, string>>;
+}
+
 export interface DiscoverResult {
   accountName: string;
   candidates: DiscoveredArticle[];
   engine: string;
   hint?: string;
-  discoveryType?: 'account-name' | 'homepage-url' | 'article-url';
+  discoveryType?: DiscoveryType;
   overview?: DiscoverOverview;
+  accountProfile?: WechatAccountProfile;
+  engineSelection?: EngineSelection;
 }
 
 export interface BatchParseError {
