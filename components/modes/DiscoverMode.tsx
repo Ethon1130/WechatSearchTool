@@ -296,7 +296,7 @@ export function DiscoverMode({ notify, onHandOff }: DiscoverModeProps) {
             <input
               id="discover-query-input"
               type="text"
-              placeholder="如：程序员鱼皮，或 https://mp.weixin.qq.com/s/..."
+              placeholder="如：公众号名称，或 https://mp.weixin.qq.com/s/..."
               value={accountName}
               onChange={(e) => setAccountName(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && !isBusy && handleDiscover()}
