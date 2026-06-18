@@ -1,0 +1,25 @@
+{
+  "name": "wechatresearchtool",
+  "version": "1.0.0",
+  "description": "WeChat Research Agent - 公众号文章调研工具",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "cheerio": "^1.2.0",
+    "next": "^16.2.9",
+    "react": "^19.2.7",
+    "react-dom": "^19.2.7"
+  },
+  "devDependencies": {
+    "@types/cheerio": "^0.22.35",
+    "@types/node": "^25.9.3",
+    "@types/react": "^19.2.17",
+    "typescript": "^6.0.3"
+  }
+}

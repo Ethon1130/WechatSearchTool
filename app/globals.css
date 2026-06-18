@@ -1,0 +1,254 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  min-height: 100vh;
+  padding: 20px;
+}
+
+.container {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+header {
+  text-align: center;
+  color: white;
+  margin-bottom: 30px;
+}
+
+header h1 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 10px;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+header p {
+  font-size: 1.1rem;
+  opacity: 0.9;
+}
+
+.card {
+  background: white;
+  border-radius: 16px;
+  padding: 30px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+  margin-bottom: 20px;
+}
+
+.input-section {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+input[type="text"] {
+  flex: 1;
+  padding: 14px 18px;
+  font-size: 16px;
+  border: 2px solid #e0e0e0;
+  border-radius: 10px;
+  outline: none;
+  transition: border-color 0.3s;
+}
+
+input[type="text"]:focus {
+  border-color: #667eea;
+}
+
+button {
+  padding: 14px 28px;
+  font-size: 16px;
+  font-weight: 600;
+  color: white;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+}
+
+button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 40px;
+  color: #666;
+}
+
+.spinner {
+  width: 24px;
+  height: 24px;
+  border: 3px solid #e0e0e0;
+  border-top-color: #667eea;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.error {
+  background: #fee;
+  color: #c33;
+  padding: 16px;
+  border-radius: 10px;
+  border: 1px solid #fcc;
+}
+
+.result-section {
+  margin-top: 30px;
+}
+
+.section-title {
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.article-info {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.info-item {
+  background: #f8f9fa;
+  padding: 16px;
+  border-radius: 10px;
+}
+
+.info-item .label {
+  font-size: 0.85rem;
+  color: #888;
+  margin-bottom: 4px;
+}
+
+.info-item .value {
+  font-size: 1rem;
+  color: #333;
+  font-weight: 500;
+}
+
+.summary-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+}
+
+.summary-card {
+  background: #f8f9fa;
+  padding: 20px;
+  border-radius: 12px;
+  border-left: 4px solid #667eea;
+}
+
+.summary-card.business { border-left-color: #10b981; }
+.summary-card.product { border-left-color: #f59e0b; }
+.summary-card.growth { border-left-color: #3b82f6; }
+.summary-card.interview { border-left-color: #8b5cf6; }
+
+.summary-card h4 {
+  font-size: 0.9rem;
+  color: #667eea;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.summary-card.business h4 { color: #10b981; }
+.summary-card.product h4 { color: #f59e0b; }
+.summary-card.growth h4 { color: #3b82f6; }
+.summary-card.interview h4 { color: #8b5cf6; }
+
+.summary-card p {
+  color: #444;
+  line-height: 1.6;
+}
+
+.export-section {
+  display: flex;
+  gap: 12px;
+  margin-top: 24px;
+  padding-top: 24px;
+  border-top: 1px solid #e0e0e0;
+}
+
+.export-btn {
+  background: #f8f9fa;
+  color: #333;
+  border: 2px solid #e0e0e0;
+}
+
+.export-btn:hover:not(:disabled) {
+  background: #667eea;
+  color: white;
+  border-color: #667eea;
+}
+
+.content-preview {
+  background: #f8f9fa;
+  padding: 16px;
+  border-radius: 10px;
+  margin-top: 16px;
+  max-height: 200px;
+  overflow: hidden;
+  position: relative;
+}
+
+.content-preview::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 60px;
+  background: linear-gradient(transparent, #f8f9fa);
+}
+
+.content-preview.expanded {
+  max-height: none;
+}
+
+.content-preview.expanded::after {
+  display: none;
+}
+
+.toggle-content {
+  background: transparent;
+  color: #667eea;
+  padding: 8px 16px;
+  font-size: 14px;
+  margin-top: 8px;
+  box-shadow: none;
+}
+
+.toggle-content:hover {
+  background: transparent;
+  color: #764ba2;
+  transform: none;
+  box-shadow: none;
+}
