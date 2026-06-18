@@ -86,3 +86,17 @@ tmp/
 .cursorignore
 .aider*
 .continue/
+agent-transcripts/
+
+# Terminals (Cursor internal)
+terminals/
+
+# Local databases (if any)
+*.sqlite
+*.db
+*.sqlite3
+
+# Temp files
+*.tmp
+*.temp
+.cache/

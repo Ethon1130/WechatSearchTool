@@ -98,7 +98,11 @@ export function SingleMode({ notify }: SingleModeProps) {
 
       <div className="panel">
         <div className="input-row">
+          <label className="sr-only" htmlFor="single-url-input">
+            公众号文章或网页 URL
+          </label>
           <input
+            id="single-url-input"
             type="url"
             placeholder="https://mp.weixin.qq.com/s/... 或 https://example.com/article"
             value={url}
@@ -110,8 +114,8 @@ export function SingleMode({ notify }: SingleModeProps) {
           </button>
         </div>
         {step !== 'idle' && (
-          <div className="loading">
-            <div className="spinner" />
+          <div className="loading" role="status" aria-live="polite">
+            <div className="spinner" aria-hidden="true" />
             <span>{step === 'extracting' ? '正在抓取并解析页面...' : '正在生成摘要...'}</span>
           </div>
         )}

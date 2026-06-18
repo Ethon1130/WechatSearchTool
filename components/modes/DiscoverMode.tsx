@@ -290,8 +290,11 @@ export function DiscoverMode({ notify, onHandOff }: DiscoverModeProps) {
       <div className="panel">
         <div className="discover-controls">
           <div className="discover-query">
-            <label className="field-label">公众号名称 / 主页链接 / 任意文章链接</label>
+            <label className="field-label" htmlFor="discover-query-input">
+              公众号名称 / 主页链接 / 任意文章链接
+            </label>
             <input
+              id="discover-query-input"
               type="text"
               placeholder="如：程序员鱼皮，或 https://mp.weixin.qq.com/s/..."
               value={accountName}
@@ -301,8 +304,11 @@ export function DiscoverMode({ notify, onHandOff }: DiscoverModeProps) {
             />
           </div>
           <div className="discover-limit">
-            <label className="field-label">先发现多少篇</label>
+            <label className="field-label" htmlFor="discover-limit-select">
+              先发现多少篇
+            </label>
             <select
+              id="discover-limit-select"
               value={articleLimit}
               onChange={(e) => setArticleLimit(Number(e.target.value))}
               disabled={isBusy}
@@ -319,8 +325,10 @@ export function DiscoverMode({ notify, onHandOff }: DiscoverModeProps) {
           </button>
         </div>
 
-        <div className="engine-picker">
-          <span className="field-label">搜索源</span>
+        <div className="engine-picker" role="group" aria-labelledby="engine-picker-label">
+          <span className="field-label" id="engine-picker-label">
+            搜索源
+          </span>
           <div className="engine-options">
             {ENGINE_OPTIONS.map((option) => (
               <label key={option.id} className="engine-option">
@@ -466,8 +474,11 @@ export function DiscoverMode({ notify, onHandOff }: DiscoverModeProps) {
 
       {(candidates.length > 0 || engine) && (
         <div className="panel">
-          <label className="field-label">手动追加文章 URL(每行一个,可选)</label>
+          <label className="field-label" htmlFor="discover-extra-urls">
+            手动追加文章 URL(每行一个,可选)
+          </label>
           <textarea
+            id="discover-extra-urls"
             className="batch-textarea"
             rows={3}
             placeholder={'https://mp.weixin.qq.com/s/...'}
@@ -530,8 +541,8 @@ export function DiscoverMode({ notify, onHandOff }: DiscoverModeProps) {
 
       {(phase === 'analyzing' || phase === 'summarizing') && (
         <div className="panel">
-          <div className="loading">
-            <div className="spinner" />
+          <div className="loading" role="status" aria-live="polite">
+            <div className="spinner" aria-hidden="true" />
             <span>
               {analyzeStep === 'parsing'
                 ? `正在解析 ${analyzeSourceLabel} 的候选文章... ${analyzeProgress.done}/${analyzeProgress.total}`

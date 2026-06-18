@@ -53,6 +53,7 @@ export default function Home() {
           <button
             key={tab.id}
             className={mode === tab.id ? 'tab-button active' : 'tab-button'}
+            aria-pressed={mode === tab.id}
             onClick={() => setMode(tab.id)}
             type="button"
           >

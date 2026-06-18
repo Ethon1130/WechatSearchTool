@@ -217,8 +217,11 @@ ${summarySection}
       </div>
 
       <div className="panel">
-        <label className="field-label">公众号文章 / 普通网页 URL 列表(每行一个)</label>
+        <label className="field-label" htmlFor="batch-url-list">
+          公众号文章 / 普通网页 URL 列表(每行一个)
+        </label>
         <textarea
+          id="batch-url-list"
           className="batch-textarea"
           rows={6}
           placeholder={'https://mp.weixin.qq.com/s/...\nhttps://example.com/article'}
@@ -233,8 +236,8 @@ ${summarySection}
           </button>
         </div>
         {phase === 'parsing' && (
-          <div className="loading">
-            <div className="spinner" />
+          <div className="loading" role="status" aria-live="polite">
+            <div className="spinner" aria-hidden="true" />
             <span>解析中... {progress.done}/{progress.total}</span>
           </div>
         )}
@@ -247,7 +250,11 @@ ${summarySection}
               <h3>合并报告设置</h3>
               <p>报告标题留空将自动使用首个来源公众号名。</p>
             </div>
+            <label className="sr-only" htmlFor="report-title-input">
+              报告标题
+            </label>
             <input
+              id="report-title-input"
               type="text"
               placeholder="报告标题(可选)"
               value={reportTitle}
