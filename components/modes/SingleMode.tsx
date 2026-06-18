@@ -92,7 +92,7 @@ export function SingleMode({ notify }: SingleModeProps) {
   return (
     <div className="mode-panel">
       <div className="mode-intro">
-        <h2>单篇文章链接分析</h2>
+        <h2>单链接内容分析</h2>
         <p>粘贴一篇公众号文章 URL 或普通网页 URL,提取标题、来源、作者、正文、图片与链接,并可选择生成 AI 摘要。</p>
       </div>
 
@@ -100,7 +100,7 @@ export function SingleMode({ notify }: SingleModeProps) {
         <div className="input-row">
           <input
             type="url"
-            placeholder="https://mp.weixin.qq.com/s/xxxxx"
+            placeholder="https://mp.weixin.qq.com/s/... 或 https://example.com/article"
             value={url}
             onChange={(e) => setUrl(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && handleExtract()}

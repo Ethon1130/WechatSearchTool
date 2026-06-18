@@ -9,8 +9,8 @@ type Mode = 'single' | 'batch' | 'discover';
 type BannerType = 'error' | 'info';
 
 const TABS: Array<{ id: Mode; label: string; description: string }> = [
-  { id: 'single', label: '单链接分析', description: '粘贴单篇文章 URL,提取并可选生成摘要' },
-  { id: 'batch', label: '多链接批量分析', description: '粘贴多条 URL,批量解析并合并报告' },
+  { id: 'single', label: '单链接分析', description: '支持公众号文章与普通网页总结' },
+  { id: 'batch', label: '多链接批量分析', description: '批量解析公众号文章/网页并合并报告' },
   { id: 'discover', label: '公众号账号发现', description: '输入公众号名,发现公开文章后勾选分析' },
 ];
 
@@ -39,11 +39,11 @@ export default function Home() {
     <main className="page-shell">
       <section className="hero">
         <div>
-          <p className="eyebrow">公众号研究助手 · WeChat Research Tool</p>
-          <h1>通过公开线索发现公众号文章,经你确认后再分析</h1>
+          <p className="eyebrow">公众号与网页研究助手 · WeChat Research Tool</p>
+          <h1>提取公众号文章与普通网页,生成摘要和研究报告</h1>
           <p className="subtitle">
-            本工具<strong>不爬取全网公众号</strong>。当你只知道公众号名称时,我们通过公开搜索引擎为你发现候选文章链接;
-            再由你勾选希望分析的文章,系统才会抓取、解析并可选生成 AI 摘要。所有原始数据与合并报告均可导出为 JSON / Markdown。
+            支持粘贴公众号文章 URL 或普通网页 URL,提取标题、来源、正文、图片与链接,并可选生成 AI 摘要。
+            当你只知道公众号名称时,工具也能通过公开搜索发现候选文章;经你确认后再解析。原始数据与合并报告均可导出为 JSON / Markdown。
           </p>
         </div>
       </section>

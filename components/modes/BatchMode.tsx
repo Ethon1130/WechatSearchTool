@@ -213,15 +213,15 @@ ${summarySection}
     <div className="mode-panel">
       <div className="mode-intro">
         <h2>多链接批量分析</h2>
-        <p>每行粘贴一个公众号文章 URL,批量提取后生成 AI 摘要并合并成报告。单次最多 10 个,失败的文章会单独列出。</p>
+        <p>每行粘贴一个公众号文章或普通网页 URL,批量提取后生成 AI 摘要并合并成报告。单次最多 10 个,失败的链接会单独列出。</p>
       </div>
 
       <div className="panel">
-        <label className="field-label">文章 URL 列表(每行一个)</label>
+        <label className="field-label">公众号文章 / 普通网页 URL 列表(每行一个)</label>
         <textarea
           className="batch-textarea"
           rows={6}
-          placeholder={'https://mp.weixin.qq.com/s/...\nhttps://mp.weixin.qq.com/s/...'}
+          placeholder={'https://mp.weixin.qq.com/s/...\nhttps://example.com/article'}
           value={urlText}
           onChange={(e) => setUrlText(e.target.value)}
           disabled={isBusy}
