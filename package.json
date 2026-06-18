@@ -1,13 +1,18 @@
 {
   "name": "wechatresearchtool",
   "version": "1.0.0",
-  "description": "WeChat Research Agent - 公众号文章调研工具",
+  "description": "WeChat article and webpage information extractor",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start"
   },
-  "keywords": [],
+  "keywords": [
+    "wechat",
+    "crawler",
+    "extractor",
+    "research"
+  ],
   "author": "",
   "license": "ISC",
   "dependencies": {

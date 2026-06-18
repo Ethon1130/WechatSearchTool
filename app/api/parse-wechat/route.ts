@@ -1,24 +1,24 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { parseWeChatArticle } from '@/lib/parser';
+import { parseSource } from '@/lib/parser';
 
 export async function POST(request: NextRequest) {
   try {
     const { url } = await request.json();
 
-    if (!url || !url.includes('mp.weixin.qq.com')) {
+    if (!url || typeof url !== 'string') {
       return NextResponse.json(
-        { error: '请输入有效的公众号文章链接' },
+        { error: 'Please provide a webpage or WeChat article URL.' },
         { status: 400 }
       );
     }
 
-    const article = await parseWeChatArticle(url);
+    const source = await parseSource(url);
 
-    return NextResponse.json(article);
+    return NextResponse.json(source);
   } catch (error) {
     console.error('Parse error:', error);
     return NextResponse.json(
-      { error: '解析失败', detail: error instanceof Error ? error.message : 'Unknown error' },
+      { error: 'Extraction failed.', detail: error instanceof Error ? error.message : 'Unknown error' },
       { status: 500 }
     );
   }

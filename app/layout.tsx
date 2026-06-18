@@ -1,8 +1,9 @@
 import './globals.css';
 
 export const metadata = {
-  title: 'WeChat Research Agent',
-  description: '公众号文章调研工具 - 快速提取、整理和分析公众号内容',
+  title: '公众号研究助手 | WeChat Research Tool',
+  description:
+    '通过公众号名称发现公开文章线索,由你确认后再分析。提取、摘要、合并报告均可导出。',
 };
 
 export default function RootLayout({

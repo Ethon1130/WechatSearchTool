@@ -24,9 +24,14 @@ yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-# local env files
+# local env files (NEVER commit real secrets)
+/.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
 .env*.local
-.env
+*.env
 
 # vercel
 .vercel
@@ -43,3 +48,41 @@ next-env.d.ts
 
 # OS
 Thumbs.db
+
+# Secrets & credentials (defense in depth)
+**/*.key
+**/*.pem
+**/*.p12
+**/*.pfx
+**/secrets.*
+**/credentials.*
+**/service-account*.json
+**/gcloud-service-account.json
+**/firebase-adminsdk*.json
+**/*.crt
+**/*.cer
+**/*.keystore
+**/id_rsa*
+**/.ssh/
+
+# Logs that may contain tokens / URLs / PII
+*.log
+logs/
+*.log.*
+
+# Local exports from the tool (user-generated reports, may contain scraped content / API output)
+exports/
+reports/
+output/
+downloads/
+scratch/
+tmp/
+*.export.json
+*.report.json
+*.report.md
+
+# Cursor / AI tool local state
+.cursor/
+.cursorignore
+.aider*
+.continue/

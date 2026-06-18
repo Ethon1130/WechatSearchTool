@@ -1,190 +1,231 @@
-# WeChat Research Agent
+# 公众号研究助手 · WeChat Research Tool
 
-> 公众号文章调研工具 - 快速提取、整理和分析公众号内容
+> **定位**:不做"爬取全网公众号"的承诺,而是 **通过公众号名称发现公开文章线索 → 由用户确认 → 再进行分析**。
 
-一个基于 Next.js 14+ App Router 的智能调研工具，帮助你从微信公众号文章中快速提取关键信息，并通过 AI 自动归类总结。
+当用户只记得一个公众号名字(例如「彭涛说」「彭少」「程序员章鱼哥」),工具会通过公开搜索引擎为用户找到该公众号的公开文章候选,用户勾选后才抓取并分析。原始数据、摘要、合并报告均可导出为 JSON / Markdown。
 
-## 功能特性
+---
 
-- 🔗 **链接解析**：粘贴公众号文章链接，自动抓取文章内容
-- 📝 **智能提取**：自动提取标题、公众号名、作者、正文、摘要、封面
-- 🤖 **AI 总结**：调用 DeepSeek AI 从 5 个维度分析文章
-- 📊 **结构化输出**：核心观点、产品信息、业务方向、增长策略、面试启发
-- 💾 **一键导出**：支持 JSON 和 Markdown 格式下载报告
+## 三个入口
 
-## 快速开始
+### 入口 1:单链接分析
+- 输入:单篇公众号文章 URL 或普通网页 URL
+- 流程:粘贴 → 提取 → 可选 AI 摘要 → 导出
+- 适用:已知一篇文章地址,做深度阅读或资料归档
 
-### 环境要求
+### 入口 2:多链接批量分析
+- 输入:多行 URL(每行一条)
+- 流程:批量解析(并发 3) → 逐篇生成 AI 摘要 → 合并报告
+- 输出:可导出合并 Markdown / JSON,带跨篇总览(Overview)
+- 适用:已经收集到一批相关文章,做主题研究
 
+### 入口 3:公众号账号发现模式 ⭐
+- 输入:公众号名称
+- 流程:
+  1. 通过 **DuckDuckGo 公开搜索** 执行 `site:mp.weixin.qq.com <名称>` 查询
+  2. 展示候选文章列表(标题 + 摘要片段 + URL)
+  3. 用户**勾选**希望分析的文章(可全选/清空)
+  4. 也可**手动追加 URL**(候选不全时的兜底)
+  5. 移交到入口 2,完成批量解析 + 摘要 + 合并报告
+- 兜底:若搜索无结果,引导用户切换到入口 2 手动粘贴
+
+---
+
+## 边界(明确不做的事)
+
+- ❌ 登录公众号后台 / 调用任何需登录态的接口
+- ❌ 爬取 sogou 微信搜索(已被官方限制)
+- ❌ 做全文索引 / 持久化用户数据到服务端(无数据库)
+- ❌ 高频抓取、绕过反爬
+
+我们做的事:
+- ✅ 公开搜索引擎可见的公众号文章链接
+- ✅ 用户确认后的抓取与解析
+- ✅ 可选的 AI 摘要(DeepSeek)
+- ✅ 原始数据 + 合并报告导出
+
+---
+
+## Setup
+
+### Requirements
 - Node.js >= 18.17
 - npm / pnpm / yarn
 
-### 1. 安装依赖
+### Install
 
 ```bash
 npm install
 ```
 
-### 2. 配置环境变量
-
-复制环境变量示例文件：
-
-```bash
-cp .env.local.example .env.local
-```
-
-编辑 `.env.local`，填入你的 DeepSeek API Key：
+### Optional AI Summary
+原始解析无需任何环境变量。
+要启用摘要功能,复制 `.env.local.example` 到 `.env.local` 并设置:
 
 ```env
-API_KEY=your_deepseek_api_key_here
+DEEPSEEK_API_KEY=your_deepseek_api_key_here
 ```
 
-获取 API Key：[DeepSeek Platform](https://platform.deepseek.com/)
+> **安全提示**:`.env.local` 已在 `.gitignore` 中忽略,请勿提交任何含真实 key 的文件。
+> 如不慎泄漏,立即到 [DeepSeek 控制台](https://platform.deepseek.com/) 吊销并重建。
 
-### 3. 启动开发服务器
+### Run
+
+PowerShell 可能阻止 `npm.ps1`,Windows 下请用 `npm.cmd`:
 
 ```bash
-npm run dev
+npm.cmd run dev
 ```
 
-打开 [http://localhost:3000](http://localhost:3000) 即可使用。
+打开 [http://localhost:3000](http://localhost:3000)。
 
-### 4. 构建生产版本
+### Build
 
 ```bash
-npm run build
-npm start
+npm.cmd run build
+npm.cmd start
 ```
 
-## 使用方法
+---
 
-1. 在输入框中粘贴公众号文章链接（必须包含 `mp.weixin.qq.com`）
-2. 点击「开始分析」按钮
-3. 等待解析和 AI 分析完成（约 10-30 秒）
-4. 查看分析结果：
-   - **文章基本信息**：标题、公众号、作者、摘要
-   - **AI 智能分析**：5 个维度的结构化总结
-5. 点击「导出 JSON」或「导出 Markdown」下载报告
+## 数据结构
 
-## AI 分析维度
+```ts
+interface ExtractedSource {
+  title: string;
+  sourceName: string;
+  sourceType: 'wechat' | 'webpage';
+  author: string;
+  publishTime: string;
+  digest: string;
+  cover: string;
+  contentText: string;
+  contentHtml: string;
+  sourceUrl: string;
+  images: string[];
+  links: Array<{ text: string; href: string }>;
+  extractedAt: string;
+}
 
-| 维度 | 说明 |
-|------|------|
-| 核心观点 | 文章主要想表达什么？ |
-| 产品/公司信息 | 提到了哪些产品、项目或公司？ |
-| 业务方向 | 文章体现了什么业务发展方向？ |
-| 增长策略 | 有哪些增长或运营策略值得学习？ |
-| 面试启发 | 对面试这家公司的候选人有什么建议？ |
+interface SourceSummary {
+  keyPoints: string;
+  entities: string;
+  businessSignals: string;
+  usefulFacts: string;
+  followUpIdeas: string;
+}
 
-## 技术栈
+interface DiscoveredArticle {
+  title: string;
+  url: string;
+  snippet: string;
+  sourceName?: string;
+}
 
-- **框架**：Next.js 16 (App Router)
-- **语言**：TypeScript
-- **前端**：React 19
-- **后端**：Next.js API Routes
-- **HTML 解析**：Cheerio
-- **AI 服务**：DeepSeek API
+interface DiscoverResult {
+  accountName: string;
+  candidates: DiscoveredArticle[];
+  engine: string;        // 当前实现固定为 'duckduckgo'
+  hint?: string;         // 无结果时的兜底提示
+}
 
-## 项目结构
+interface BatchParseResult {
+  sources: ExtractedSource[];
+  errors: Array<{ url: string; message: string }>;
+}
 
+interface MergedReport {
+  title: string;
+  generatedAt: string;
+  items: Array<{ source: ExtractedSource; summary?: SourceSummary }>;
+  overview?: string;
+}
 ```
-WechatResearchTool/
-├── app/
-│   ├── page.tsx                       # 主页面（UI + 交互逻辑）
-│   ├── layout.tsx                     # 根布局
-│   ├── globals.css                    # 全局样式
-│   └── api/
-│       ├── parse-wechat/
-│       │   └── route.ts               # 解析公众号文章 API
-│       └── summarize/
-│           └── route.ts               # AI 总结 API
-├── lib/
-│   ├── parser.ts                      # Cheerio 解析逻辑
-│   ├── deepseek.ts                    # DeepSeek API 调用 + 响应解析
-│   └── types.ts                       # TypeScript 类型定义
-├── .env.local.example                 # 环境变量模板
-├── .gitignore                         # Git 忽略文件
-├── next.config.js                     # Next.js 配置
-├── package.json                       # 项目依赖
-├── tsconfig.json                      # TypeScript 配置
-└── README.md                          # 项目说明
-```
 
-## API 端点
+---
 
-### POST `/api/parse-wechat`
+## API
 
-解析公众号文章
+### `POST /api/parse-wechat`
+单链接解析(同时支持公众号与普通网页)。
 
-**请求体**：
+Request:
 ```json
 { "url": "https://mp.weixin.qq.com/s/xxxxx" }
 ```
 
-**响应**：
+Response:`ExtractedSource`
+
+### `POST /api/summarize`
+对单条 `ExtractedSource` 生成摘要(需 `DEEPSEEK_API_KEY`)。
+
+Request:
 ```json
-{
-  "title": "文章标题",
-  "accountName": "公众号名称",
-  "author": "作者",
-  "digest": "摘要",
-  "cover": "封面图URL",
-  "contentText": "正文文本",
-  "contentHtml": "正文HTML",
-  "sourceUrl": "原文链接"
-}
+{ "source": { "title": "...", "contentText": "..." } }
 ```
 
-### POST `/api/summarize`
+Response:`SourceSummary`
 
-调用 DeepSeek AI 总结
+### `POST /api/batch`
+批量解析(单次最多 10 个 URL,内部并发 3)。
 
-**请求体**：
+Request:
 ```json
-{ "content": "文章正文", "title": "文章标题" }
+{ "urls": ["https://...", "https://..."] }
 ```
 
-**响应**：
+Response:`BatchParseResult`
+
+### `POST /api/discover`
+公开搜索发现公众号文章候选(当前使用 DuckDuckGo HTML 接口)。
+
+Request:
 ```json
-{
-  "coreInsights": "核心观点",
-  "productInfo": "产品/公司信息",
-  "businessDirection": "业务方向",
-  "growthStrategy": "增长策略",
-  "interviewInsights": "面试启发"
-}
+{ "accountName": "彭涛说", "limit": 15 }
 ```
 
-## 常见问题
+Response:`DiscoverResult`
 
-### 解析失败怎么办？
+---
 
-部分公众号文章可能设置了访问限制（仅微信内可访问），此时解析会失败。可以尝试：
-- 在微信中打开文章，确认可以正常访问
-- 复制完整的文章链接（包含 `?__biz=` 等参数）
+## 典型使用流程
 
-### AI 总结质量如何？
+### 场景 A:只知道公众号名
 
-总结质量取决于 DeepSeek 模型的输出。建议：
-- 提供完整、正文的文章
-- 文章内容过短时，分析可能较为简略
+1. 切换到「公众号账号发现」
+2. 输入「彭涛说」→ 点击「发现公开文章」
+3. 在候选列表中勾选 5 篇,再手动追加 2 条已知 URL
+4. 点击「分析所选文章」→ 自动跳转到「多链接批量分析」
+5. 点击「为全部文章生成摘要」→ 「生成跨篇总览」→ 导出合并 Markdown
 
-### 部署到 Vercel
+### 场景 B:已有 8 篇文章 URL
 
-```bash
-npm i -g vercel
-vercel
-```
+1. 切换到「多链接批量分析」
+2. 粘贴 8 行 URL → 点击「批量解析」
+3. 点击「为全部文章生成摘要」
+4. 点击「生成跨篇总览」
+5. 导出合并报告(MD / JSON)
 
-记得在 Vercel 控制台配置 `API_KEY` 环境变量。
+### 场景 C:一篇深度文章
+
+1. 切换到「单链接分析」
+2. 粘贴 URL → 点击「提取」
+3. 点击「生成摘要」→ 导出 Markdown / JSON
+
+---
+
+## 适用场景
+
+- 公司 / 行业 / 竞品研究前的资料整理
+- 跟踪某个公众号的系列观点
+- 构建行业 / 竞品信息库
+- 把数据喂给 LLM、RAG、Notion、飞书、Excel 等下游工作流
+
+---
 
 ## 注意事项
 
-- 部分公众号文章可能设置了访问限制，解析可能失败
-- AI 总结质量取决于 DeepSeek API 的响应
-- 请合理使用，避免频繁请求导致 API 限流
-- 工具仅供学习研究使用，请尊重原创内容版权
-
-## License
-
-MIT
+- 部分公众号文章限制外站访问,可能解析失败(已归入 `BatchParseResult.errors`,不影响其他文章)
+- 公开搜索结果取决于搜索引擎的收录情况,候选不全时可手动追加
+- 公开搜索走 DuckDuckGo HTML 接口,无 API Key,但搜索质量受限于其索引
+- 请尊重原始内容版权,合理使用抓取结果
