@@ -104,3 +104,32 @@ export interface MergedReport {
   items: BatchItem[];
   overview?: string;
 }
+
+export type ResearchAgentStep =
+  | 'extracting'
+  | 'summarizing'
+  | 'extracting-insights'
+  | 'composing-report'
+  | 'ready'
+  | 'failed';
+
+export interface ResearchArtifact {
+  sources: ExtractedSource[];
+  summaries: SourceSummary[];
+  overview?: string;
+  errors: BatchParseError[];
+  generatedAt: string;
+}
+
+export interface ResearchChatMessage {
+  id: string;
+  role: 'user' | 'assistant' | 'system';
+  content: string;
+  createdAt: string;
+  artifact?: ResearchArtifact;
+}
+
+export interface ResearchFollowUpRequest {
+  question: string;
+  artifact: ResearchArtifact;
+}

@@ -1,4 +1,4 @@
-import type { BatchItem, ExtractedSource, SourceSummary } from './types';
+import type { BatchItem, ExtractedSource, ResearchArtifact, SourceSummary } from './types';
 
 const DEFAULT_DEEPSEEK_API_URL = 'https://api.deepseek.com/v1/chat/completions';
 const DEFAULT_DEEPSEEK_MODEL = 'deepseek-chat';
@@ -148,6 +148,67 @@ export async function mergeReport(items: BatchItem[], reportTitle: string): Prom
   const content = data.choices?.[0]?.message?.content || '{}';
   const parsed = JSON.parse(content) as { overview?: string };
   return parsed.overview || '';
+}
+
+export async function answerResearchFollowUp(
+  question: string,
+  artifact: ResearchArtifact
+): Promise<string> {
+  const apiKey = getApiKey();
+  const apiUrl = process.env.DEEPSEEK_API_URL || DEFAULT_DEEPSEEK_API_URL;
+  const model = process.env.DEEPSEEK_MODEL || DEFAULT_DEEPSEEK_MODEL;
+  const compact = artifact.sources.map((source, index) => ({
+    index: index + 1,
+    title: source.title,
+    sourceName: source.sourceName,
+    author: source.author,
+    publishTime: source.publishTime,
+    sourceUrl: source.sourceUrl,
+    summary: artifact.summaries[index],
+    excerpt: source.contentText.slice(0, 2200),
+  }));
+
+  const messages: DeepSeekMessage[] = [
+    {
+      role: 'system',
+      content:
+        '你是研究助理。只能根据用户已经提取的文章内容、摘要和总览回答问题。不要编造事实；如果材料不足，直接说明不足。用中文回答，尽量给出可复用的研究结论。',
+    },
+    {
+      role: 'user',
+      content: JSON.stringify(
+        {
+          question,
+          overview: artifact.overview || '',
+          articles: compact,
+          failedUrls: artifact.errors,
+        },
+        null,
+        2
+      ),
+    },
+  ];
+
+  const response = await fetch(apiUrl, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${apiKey.value}`,
+    },
+    body: JSON.stringify({
+      model,
+      messages,
+      temperature: 0.2,
+      max_tokens: 1600,
+    }),
+  });
+
+  if (!response.ok) {
+    throw new Error(await getDeepSeekErrorMessage(response, apiKey));
+  }
+
+  const data = await response.json();
+  return data.choices?.[0]?.message?.content?.trim() || '没有生成可用回答。';
 }
 
 function buildSummaryMessages(source: ExtractedSource): DeepSeekMessage[] {

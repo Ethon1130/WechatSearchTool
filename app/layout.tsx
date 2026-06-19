@@ -1,4 +1,5 @@
 import './globals.css';
+import { BackgroundCanvas } from '@/components/background/BackgroundCanvas';
 
 export const metadata = {
   title: '公众号与网页研究助手 | WeChat Research Tool',
@@ -13,7 +14,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="zh-CN">
-      <body>{children}</body>
+      <body>
+        <BackgroundCanvas />
+        {children}
+      </body>
     </html>
   );
 }
